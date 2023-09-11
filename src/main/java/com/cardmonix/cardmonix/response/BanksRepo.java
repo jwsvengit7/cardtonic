@@ -1,0 +1,1 @@
+package com.cardmonix.cardmonix.response;import lombok.Data;@Datapublic class BanksRepo{    private boolean status;    private String message;    private BankDataResponse data;}
