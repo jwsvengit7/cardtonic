@@ -14,6 +14,7 @@ public class BirthdayNotification implements Job {
     private UserService userService;
     BirthdayNotification(UserService userService){
         this.userService=userService;
+
     }
 
     @Override
