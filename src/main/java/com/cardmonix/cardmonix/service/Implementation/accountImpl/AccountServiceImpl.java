@@ -136,7 +136,8 @@ public class AccountServiceImpl implements ApplicationRunner,  AccountService {
     @Override
     public String verifyCard(BvnRequest bvnRequest) {
         User user = appUserService.verifyUser(UserUtils.getAccessTokenEmail());
-        Account account = accountRespository.findAccountByUser(user).orElseThrow(()->new AccountNotFoundException("ACCOUNT NOT FOUND"));
+        Account account = accountRespository.findAccountByUser(user)
+                .orElseThrow(()->new AccountNotFoundException("ACCOUNT NOT FOUND"));
         Banks banks = bankRespository.findBanksByBankName(account.getBankName())
                 .orElseThrow(()-> new BankNotFoundException("Bank Not Found"));
         String customer_number ="CUS_1ndrohmo7ngbjk9";
