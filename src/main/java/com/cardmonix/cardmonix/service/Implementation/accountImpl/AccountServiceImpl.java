@@ -58,7 +58,7 @@ public class AccountServiceImpl implements ApplicationRunner,  AccountService {
             ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity,String.class);
             BanksResponse bankData = objectMapper.readValue(responseEntity.getBody(), BanksResponse.class);
             List<BankData> bankDataList = bankData.getData();
-            log.info("banks {}",ANSI_BLUE+bankDataList);
+            log.info("banks {}",ANSI_BLUE+" bank received");
             bankRespository.deleteAll();
             if (bankRespository.findAll().isEmpty()) {
                 bankDataList.forEach(data -> {
