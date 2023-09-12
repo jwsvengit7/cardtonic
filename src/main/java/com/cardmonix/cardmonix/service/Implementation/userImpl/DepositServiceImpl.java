@@ -27,6 +27,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,9 +55,24 @@ public class DepositServiceImpl implements ApplicationRunner,DepositService {
     private final BalanceRepository balanceRepository;
     private final DepositRepository depositRepository;
     private final  ObjectMapper objectMapper;
+    private String[] mySelectedCoin(){
+        String[] coin = {
+                "Bitcoin",
+                "Ethereum",
+                "Tether",
+                "BNB",
+                "XRP",
+                "Dogecoin",
+                "Bitcoin Cash",
+                "Cardano",
+                "Litecoin",
+                "TRON"};
+        return coin;
+    }
 
-    @Override
-    public synchronized void run(ApplicationArguments args) throws JsonProcessingException {
+
+    @Scheduled(cron = "0 0 8 * * ?")
+    private void runCoinPriceSheduled(){
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Cache-Control","no-cache");
         String api= CoinsUtils.coinGeckoApi();
@@ -65,50 +81,47 @@ public class DepositServiceImpl implements ApplicationRunner,DepositService {
             ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
             List<RequestFromCoins> coins = null;
             ArrayList<String> saveCoin = new ArrayList<>();
-            String[] coin = {
-                    "Bitcoin",
-                    "Ethereum",
-                    "Tether",
-                    "BNB",
-                    "XRP",
-                    "Dogecoin",
-                    "Bitcoin Cash",
-                    "Cardano",
-                    "Litecoin",
-                    "TRON"};
+            String[] coin = mySelectedCoin();
             saveCoin.addAll(Arrays.asList(coin));
             coins = objectMapper.readValue(responseEntity.getBody(), new TypeReference<List<RequestFromCoins>>() {
             });
             coins.forEach((coinValues) -> {
-                Coin findCoin = coinRepository.findCoinByName(coinValues.getName());
-                if (findCoin != null) {
-                    Float price = coinValues.getCurrent_price();
-                    Coin GetCoinName = coinRepository.findCoinByName(coinValues.getName());
-                    Float oldPrice = GetCoinName.getOld_price();
-
-                    if (price > oldPrice && GetCoinName != null) {
-                        GetCoinName.setOld_price(oldPrice);
-                        GetCoinName.setCurrent_price(price);
-                        GetCoinName.setImage(coinValues.getImage());
-                        GetCoinName.setName(coinValues.getName());
-
-                        coinRepository.save(GetCoinName);
-                    }
-                } else {
-                    Coin saveNewCoin = new Coin(coinValues.getName(), coinValues.getCurrent_price(), coinValues.getImage(), coinValues.getCurrent_price());
-                    for (String s : saveCoin) {
-                        if (saveNewCoin.getName().equals(s)) {
-                            saveNewCoin.setActivate(true);
-                        }
-                    }
-                    coinRepository.save(saveNewCoin);
-                }
+                validateDbCheckUpPrice(coinValues,saveCoin);
 
             });
         }  catch(Exception e){
             System.out.println(e.getMessage()+ANSI_RED);
         }
+    }
+    private void validateDbCheckUpPrice(RequestFromCoins coinValues,ArrayList<String> saveCoin){
+        Coin findCoin = coinRepository.findCoinByName(coinValues.getName());
+        if (findCoin != null) {
+            Float price = coinValues.getCurrent_price();
+            Coin GetCoinName = coinRepository.findCoinByName(coinValues.getName());
+            Float oldPrice = GetCoinName.getOld_price();
 
+            if (price > oldPrice && GetCoinName != null) {
+                GetCoinName.setOld_price(oldPrice);
+                GetCoinName.setCurrent_price(price);
+                GetCoinName.setImage(coinValues.getImage());
+                GetCoinName.setName(coinValues.getName());
+
+                coinRepository.save(GetCoinName);
+            }
+        } else {
+            Coin saveNewCoin = new Coin(coinValues.getName(), coinValues.getCurrent_price(), coinValues.getImage(), coinValues.getCurrent_price());
+            for (String s : saveCoin) {
+                if (saveNewCoin.getName().equals(s)) {
+                    saveNewCoin.setActivate(true);
+                }
+            }
+            coinRepository.save(saveNewCoin);
+        }
+    }
+
+    @Override
+    public synchronized void run(ApplicationArguments args) throws JsonProcessingException {
+        runCoinPriceSheduled();
     }
 
     private void CheckBalance(User user){

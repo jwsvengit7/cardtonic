@@ -20,6 +20,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -47,13 +48,14 @@ public class AccountServiceImpl implements ApplicationRunner,  AccountService {
 
 
 
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-       headers.setContentType(MediaType.APPLICATION_JSON);
+
+    @Scheduled(cron = "0 0 8 * * ?")
+    private void runScheduleTask(){
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Cache-Control", "no-cache");
         RequestEntity<?>  requestEntity = new RequestEntity<>(headers,HttpMethod.GET, URI.create("https://api.paystack.co/bank"));
         try {
-        ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity,String.class);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity,String.class);
             BanksResponse bankData = objectMapper.readValue(responseEntity.getBody(), BanksResponse.class);
             List<BankData> bankDataList = bankData.getData();
             log.info("banks {}",ANSI_BLUE+bankDataList);
@@ -66,6 +68,10 @@ public class AccountServiceImpl implements ApplicationRunner,  AccountService {
         }catch (Exception e){
             log.info("error {}",ANSI_PURPLE+e.getMessage());
         }
+    }
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        runScheduleTask();
 }
     @Override
     public FetchAccount getBankCodeAndSend(String bankName, String accountNumber) {
