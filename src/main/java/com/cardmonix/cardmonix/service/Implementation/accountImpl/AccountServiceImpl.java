@@ -106,7 +106,7 @@ public class AccountServiceImpl implements ApplicationRunner,  AccountService {
                 .user(user)
                 .build();
         SubAccountRequest request = new SubAccountRequest(
-                "CADIOC COMPANY",
+                "CADMONIX COMPANY",
                 banks.getBankCode(),
                 requestAccount.getAccountNumber(),
                 "1");
