@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -42,6 +43,7 @@ import static com.cardmonix.cardmonix.utils.ASCIIColors.ANSI_RED;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DepositServiceImpl implements ApplicationRunner,DepositService {
     private final HttpHeaders headers;
     private final RestTemplate restTemplate;
@@ -105,6 +107,7 @@ public class DepositServiceImpl implements ApplicationRunner,DepositService {
                 GetCoinName.setCurrent_price(price);
                 GetCoinName.setImage(coinValues.getImage());
                 GetCoinName.setName(coinValues.getName());
+                log.info("coins updated");
 
                 coinRepository.save(GetCoinName);
             }
@@ -115,6 +118,7 @@ public class DepositServiceImpl implements ApplicationRunner,DepositService {
                     saveNewCoin.setActivate(true);
                 }
             }
+            log.info("coins save");
             coinRepository.save(saveNewCoin);
         }
     }
