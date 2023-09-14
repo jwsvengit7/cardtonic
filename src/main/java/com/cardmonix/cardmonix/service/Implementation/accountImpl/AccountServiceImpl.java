@@ -168,7 +168,6 @@ public class AccountServiceImpl implements ApplicationRunner,  AccountService {
     public AccountResponse deleteAccount(String subaccount_code) {
         return null;
     }
-
     @Override
     public AccountResponse getAccountByLogedInUser() {
         User user = appUserService.verifyUser(UserUtils.getAccessTokenEmail());
@@ -178,6 +177,4 @@ public class AccountServiceImpl implements ApplicationRunner,  AccountService {
                 .fetchAccount(new FetchAccount(true,"resolve",new Accounts(account.getAccountNumber(),account.getAccountName(),account.getAccountId())))
                 .build();
     }
-
-
 }
