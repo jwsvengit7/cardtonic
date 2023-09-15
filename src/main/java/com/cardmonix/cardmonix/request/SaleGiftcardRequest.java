@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class SaleGiftcardRequest {
     private String name;
-    private LocalDateTime localDateTime;
     private Double amount;
-    private String transid;
+
 }

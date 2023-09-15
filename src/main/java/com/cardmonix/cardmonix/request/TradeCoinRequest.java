@@ -6,9 +6,7 @@ import lombok.Data;
 public class TradeCoinRequest {
     private String message;
     private Double amount;
-    private Double amountInusd;
     private String coin;
 
-    private String transid;
 
 }
