@@ -34,7 +34,7 @@ public class User implements UserDetails {
     private String password;
     @Column(name = "activate")
     private boolean activate;
-    @Column(name = "dateOfBirth")
+    @Column(name = "dateOfBirth") //7083695580
     private String dob;
     @Column(name = "phone_number")
     private String phone;

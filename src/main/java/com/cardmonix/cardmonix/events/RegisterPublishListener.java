@@ -4,6 +4,7 @@ import com.cardmonix.cardmonix.domain.entity.userModel.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -18,6 +19,8 @@ import java.io.UnsupportedEncodingException;
 public class RegisterPublishListener implements ApplicationListener<RegisterPublish> {
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
+    @Value("${spring.mail.username}")
+    private String hostName;
 
 
     @Override
@@ -37,10 +40,10 @@ public class RegisterPublishListener implements ApplicationListener<RegisterPubl
     private void sendEmail(User user,String otp) throws MessagingException, UnsupportedEncodingException {
 
         String subject = "SIGNUP";
-        String companyName = "CADIOC INVESTMENT LTD.";
+        String companyName = "CARDMONIX INVESTMENT LTD.";
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
-        messageHelper.setFrom("info@swissfliptrade.com", companyName);
+        messageHelper.setFrom(hostName, companyName);
         messageHelper.setSubject(subject);
         messageHelper.setTo(user.getEmail());
 
