@@ -50,7 +50,6 @@ public class DepositServiceImpl implements ApplicationRunner,DepositService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final AuthServiceImpl authServiceImplentation;
-    private final GiftcardRepository giftcardRepository;
     private final CoinWalletRepository coinWalletRepository;
     private final ApplicationEventPublisher publisher;
     private final CoinRepository coinRepository;
@@ -58,7 +57,7 @@ public class DepositServiceImpl implements ApplicationRunner,DepositService {
     private final DepositRepository depositRepository;
     private final  ObjectMapper objectMapper;
     private String[] mySelectedCoin(){
-        String[] coin = {
+       return new String[]{
                 "Bitcoin",
                 "Ethereum",
                 "Tether",
@@ -69,7 +68,6 @@ public class DepositServiceImpl implements ApplicationRunner,DepositService {
                 "Cardano",
                 "Litecoin",
                 "TRON"};
-        return coin;
     }
 
 
@@ -82,44 +80,46 @@ public class DepositServiceImpl implements ApplicationRunner,DepositService {
         try {
             ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
             List<RequestFromCoins> coins = null;
-            ArrayList<String> saveCoin = new ArrayList<>();
-            String[] coin = mySelectedCoin();
-            saveCoin.addAll(Arrays.asList(coin));
+            ArrayList<String> saveCoin = new ArrayList<>(Arrays.asList(mySelectedCoin()));
             coins = objectMapper.readValue(responseEntity.getBody(), new TypeReference<List<RequestFromCoins>>() {
             });
             coins.forEach((coinValues) -> {
                 validateDbCheckUpPrice(coinValues,saveCoin);
-
             });
+            log.info("coin updated"+ANSI_BLUE);
         }  catch(Exception e){
-            System.out.println(e.getMessage()+ANSI_RED);
+            log.info(e.getMessage()+ANSI_RED);
         }
     }
     private void validateDbCheckUpPrice(RequestFromCoins coinValues,ArrayList<String> saveCoin){
         Coin findCoin = coinRepository.findCoinByName(coinValues.getName());
         if (findCoin != null) {
             Float price = coinValues.getCurrent_price();
-            Coin GetCoinName = coinRepository.findCoinByName(coinValues.getName());
-            Float oldPrice = GetCoinName.getOld_price();
+            Coin getCoinName = coinRepository.findCoinByName(coinValues.getName());
+            Float oldPrice = getCoinName.getOld_price();
 
-            if (price > oldPrice && GetCoinName != null) {
-                GetCoinName.setOld_price(oldPrice);
-                GetCoinName.setCurrent_price(price);
-                GetCoinName.setImage(coinValues.getImage());
-                GetCoinName.setName(coinValues.getName());
-                log.info("coins updated");
-
-                coinRepository.save(GetCoinName);
+            if (price > oldPrice && getCoinName != null) {
+                getCoinName.setOld_price(oldPrice);
+                getCoinName.setCurrent_price(price);
+                getCoinName.setImage(coinValues.getImage());
+                getCoinName.setName(coinValues.getName());
+                coinRepository.save(getCoinName);
+                log.info("coins save");
             }
         } else {
-            Coin saveNewCoin = new Coin(coinValues.getName(), coinValues.getCurrent_price(), coinValues.getImage(), coinValues.getCurrent_price());
+            Coin saveNewCoin = new Coin(coinValues.getName(),
+                    coinValues.getCurrent_price(),
+                    coinValues.getImage(),
+                    coinValues.getCurrent_price());
             for (String s : saveCoin) {
                 if (saveNewCoin.getName().equals(s)) {
                     saveNewCoin.setActivate(true);
                 }
+                log.info("coins save");
             }
-            log.info("coins save");
+
             coinRepository.save(saveNewCoin);
+
         }
     }
 

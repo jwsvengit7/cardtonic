@@ -38,15 +38,19 @@ class AccountControllersTest {
 
     @BeforeEach
     public void init(){
-        fetchAccount = new FetchAccount(true,"message resolve",new Accounts("TEMPLE JACK CHIORLU WILLIAM","0794940296",1L));
+        fetchAccount = new FetchAccount(true,
+                "message resolve",
+                new Accounts(
+                        "TEMPLE JACK CHIORLU WILLIAM",
+                "0794940296",
+                "Access Bank"));
     }
 
     @Test
     void getBankDetails() throws Exception{
-        String bankName = "Access Bank";
         String accountNumber = "0794940296";
-        when(accountService.getBankCodeAndSend(bankName,accountNumber)).thenReturn(fetchAccount);
-        mockMvc.perform(get("/api/v1/account/verifyAccount").param("bankName",bankName).param("accountNumber",accountNumber)
+        when(accountService.getBankCodeAndSend(fetchAccount.getData().getBankName(),accountNumber)).thenReturn(fetchAccount);
+        mockMvc.perform(get("/api/v1/account/verifyAccount").param("bankName",fetchAccount.getData().getBankName()).param("accountNumber",accountNumber)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.data.account_name", CoreMatchers.is(accountNumber)))

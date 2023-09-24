@@ -22,7 +22,6 @@ public class Balance {
     @Enumerated(EnumType.STRING)
     private Currency currency;
 
-
     @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private User user;

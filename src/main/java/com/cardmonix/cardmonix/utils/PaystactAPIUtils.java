@@ -6,19 +6,16 @@ import org.springframework.http.MediaType;
 
 public class PaystactAPIUtils {
     @Value("${application.security.paystack.key}")
-    private static String KEY;
-    private HttpHeaders headers;
-    PaystactAPIUtils(HttpHeaders headers){
-        this.headers=headers;
-    }
-    public static String secreteKey(){
+    private String KEY;
+    public  String getKEY(){
         return KEY;
     }
 
-    public static void apiDetails(HttpHeaders headers) {
-        headers.setBearerAuth(PaystactAPIUtils.secreteKey());
-        headers.set("Cache-Control", "no-cache");
-        headers.setContentType(MediaType.APPLICATION_JSON);
+    public static final String PAYSTACK_SUBACCOUNT_URL = "https://api.paystack.co/subaccount";
+    public static final   String PAYSTACK_RESOLVE_URL="https://api.paystack.co/bank/resolve";
+    public static final String PERCENTAGE_CHARGE_BY_PAYSTACK ="2";
+    public static final String PAYSTACK_BANK_API ="https://api.paystack.co/bank";
 
-    }
+
+
 }

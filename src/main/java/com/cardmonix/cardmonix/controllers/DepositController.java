@@ -37,8 +37,8 @@ public class DepositController {
         return new ResponseEntity<>(apiResponse,HttpStatus.CREATED);
     }
     @CrossOrigin("*")
-    @PostMapping("/withdraw")
-    public ResponseEntity<ApiResponse<String>> withdraw(@RequestParam("price") Double price, @RequestParam("coin") String coin){
+    @PostMapping("/withdraw/{price}/{coin}")
+    public ResponseEntity<ApiResponse<String>> withdraw(@PathVariable Double price, @PathVariable String coin){
         ApiResponse<String> apiResponse = new ApiResponse<>(depositService.withdraw(price,coin));
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
 

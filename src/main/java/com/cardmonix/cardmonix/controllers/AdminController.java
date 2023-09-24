@@ -16,16 +16,16 @@ import java.util.List;
 public class AdminController {
     private final AdminService adminService;
     @CrossOrigin("*")
-    @GetMapping("/confirm-deposit")
-    public ResponseEntity<ApiResponse<String>> confirmDeposit(@RequestParam("id") Long id){
+    @GetMapping("/confirm-deposit/{id}")
+    public ResponseEntity<ApiResponse<String>> confirmDeposit(@PathVariable Long id){
         ApiResponse<String> apiResponse = new ApiResponse<>(adminService.confirmDeposit(id));
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
     @CrossOrigin("*")
-    @GetMapping("/getuserById")
-    public ResponseEntity<ApiResponse<UserResponse>> getUserById(@RequestParam("userid") Long id){
-        ApiResponse<UserResponse> apiResponse = new ApiResponse<>(adminService.getUserById(id));
+    @GetMapping("/getuserById/{userid}")
+    public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable Long userid){
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>(adminService.getUserById(userid));
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
     @CrossOrigin("*")

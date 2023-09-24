@@ -34,7 +34,7 @@ public class User implements UserDetails {
     private String password;
     @Column(name = "activate")
     private boolean activate;
-    @Column(name = "dateOfBirth") //7083695580
+    @Column(name = "dateOfBirth")
     private String dob;
     @Column(name = "phone_number")
     private String phone;
@@ -65,8 +65,6 @@ public class User implements UserDetails {
     public User(String email,String password){
         this.email=email;
         this.password=password;
-
-
     }
     @Override
     public String getPassword() {

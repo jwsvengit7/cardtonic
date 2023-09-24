@@ -18,7 +18,6 @@ public class Account {
     private String accountName;
     private String accountNumber;
     private String bankName;
-
     private String subaccount_code;
 
     @ManyToOne(cascade = CascadeType.ALL)

@@ -1,7 +1,7 @@
 package com.cardmonix.cardmonix.domain.constant;
 
 public enum GiftCards {
-    AMAZON("Amazon",3533D,"https://en.wikipedia.org/wiki/File:Amazon_logo.svg"),
+    AMAZON("Amazon",3533D,"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/603px-Amazon_logo.svg.png"),
     AMAZON_GIFT_CARD("Amazon Gift Card",3533D,"https://www.zooinfotech.com/wp-content/uploads/2020/03/Amazon-Gift-Card.jpg"),
     USA_Apple_ITunes_Gift_Card("USA Apple iTunes Gift Card",3533D,"https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcROMkim_RlXt3FdoaZ0Hg9PqsDDsUSubBUVRhGJ7U96ZrS_sKhq"),
     STEAM_GIFT_CARD("Steam $50 Gift Card",3533D,"https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcT0pnsJT4xBu1ZRM2Ap_fg1n8ZAVK1Np5EQFSGy5dT0DkS3PLwp"),

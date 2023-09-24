@@ -22,6 +22,16 @@ public class ExceptionHandlerAdvice {
         ApiResponse<CadiocExceptionsResponse> apiResponse = new ApiResponse<>(cadiocExceptionsResponse);
         return new ResponseEntity<>(apiResponse,HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(PasswordException.class)
+    public ResponseEntity<ApiResponse<CadiocExceptionsResponse>> passwordNotFound(PasswordException e){
+        CadiocExceptionsResponse cadiocExceptionsResponse = CadiocExceptionsResponse.builder()
+                .time(convertDateResponse(LocalDateTime.now()))
+                .message(e.getMessage())
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .build();
+        ApiResponse<CadiocExceptionsResponse> apiResponse = new ApiResponse<>(cadiocExceptionsResponse);
+        return new ResponseEntity<>(apiResponse,HttpStatus.NOT_FOUND);
+    }
     @ExceptionHandler(AccountNotFoundException.class)
     public ResponseEntity<ApiResponse<CadiocExceptionsResponse>> accountNotFound(AccountNotFoundException error){
         CadiocExceptionsResponse cadiocExceptionsResponse = CadiocExceptionsResponse.builder()
@@ -97,6 +107,17 @@ public class ExceptionHandlerAdvice {
         ApiResponse<CadiocExceptionsResponse> apiResponse = new ApiResponse<>(cadiocExceptionsResponse);
         return new ResponseEntity<>(apiResponse,HttpStatus.LOCKED);
     }
+    @ExceptionHandler(AccountIsuesException.class)
+    public ResponseEntity<ApiResponse<CadiocExceptionsResponse>> apiResponseResponseEntity(AccountIsuesException e){
+        CadiocExceptionsResponse cadiocExceptionsResponse = CadiocExceptionsResponse.builder()
+                .time(convertDateResponse(LocalDateTime.now()))
+                .message(e.getMessage())
+                .statusCode(HttpStatus.CONFLICT.value())
+                .build();
+        ApiResponse<CadiocExceptionsResponse> apiResponse = new ApiResponse<>(cadiocExceptionsResponse);
+        return new ResponseEntity<>(apiResponse,HttpStatus.CONFLICT);
+    }
+
 
     private String convertDateResponse(LocalDateTime dateTime){
             return dateTime.toString();

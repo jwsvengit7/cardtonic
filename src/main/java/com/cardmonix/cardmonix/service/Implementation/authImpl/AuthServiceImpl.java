@@ -21,7 +21,6 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
-import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,7 +38,7 @@ import java.util.HashMap;
 @Data
 public class AuthServiceImpl implements  AuthService {
     private final UserRepository userRepository;
-    private final Scheduler scheduler;
+
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
@@ -131,6 +130,10 @@ public class AuthServiceImpl implements  AuthService {
           if(userRepository.existsByEmail(email)){
               throw new UserNotEnabledException("USER IS ENABLED");
           }
+    }
+    public User findById(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(()->new UserNotFoundException("USER NOT FOUND"));
     }
 
 
