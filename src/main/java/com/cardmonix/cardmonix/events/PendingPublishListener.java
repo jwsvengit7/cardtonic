@@ -35,7 +35,7 @@ public class PendingPublishListener implements ApplicationListener<PendingDeposi
     private void sendDepositMail(Deposit deposit) throws MessagingException {
         MimeMessage mimeMessage = mailConfig.customJavaMailSender().createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
-        messageHelper.setFrom("Cardmonix@app.com");
+        messageHelper.setFrom("cadmonix@gmail.com");
         messageHelper.setSubject("Pending Deposit");
         messageHelper.setTo(deposit.getUser().getEmail());
         String mailContent = EmailUtils.sendHtmlEmailTemplate(templateEngine,deposit.getCoin(),deposit.getUser().getEmail(),deposit.getAmount().toString(),deposit.getAmountInCurrency().toString(), Email.DEPOSIT);

@@ -47,7 +47,7 @@ public class RegisterPublishListener implements ApplicationListener<RegisterPubl
         String companyName = APP_NAME;
         MimeMessage mimeMessage = mailConfig.customJavaMailSender().createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
-        messageHelper.setFrom(user.getEmail(), companyName);
+        messageHelper.setFrom("cadmonix@gmail.com", companyName);
         messageHelper.setSubject(subject);
         messageHelper.setTo(user.getEmail());
         String mailContent = EmailUtils.sendHtmlEmailTemplate(templateEngine,subject,user.getEmail(),otp,APP_NAME, Email.OTP);
