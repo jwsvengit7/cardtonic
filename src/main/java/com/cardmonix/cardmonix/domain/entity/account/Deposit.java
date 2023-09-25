@@ -24,7 +24,7 @@ public class Deposit {
     private String coin;
     @Enumerated(EnumType.STRING)
     private Status status;
-
+    private String image;
     private String transId;
 
     private String proof;

@@ -16,6 +16,7 @@ import com.cardmonix.cardmonix.response.DepositReponse;
 import com.cardmonix.cardmonix.service.DepositService;
 import com.cardmonix.cardmonix.service.Implementation.authImpl.AuthServiceImpl;
 import com.cardmonix.cardmonix.utils.CoinsUtils;
+import com.cardmonix.cardmonix.utils.DepositUtils;
 import com.cardmonix.cardmonix.utils.RandomValues;
 import com.cardmonix.cardmonix.utils.UserUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -47,7 +48,6 @@ import static com.cardmonix.cardmonix.utils.ASCIIColors.ANSI_RED;
 public class DepositServiceImpl implements ApplicationRunner,DepositService {
     private final HttpHeaders headers;
     private final RestTemplate restTemplate;
-    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final AuthServiceImpl authServiceImplentation;
     private final CoinWalletRepository coinWalletRepository;
@@ -104,7 +104,6 @@ public class DepositServiceImpl implements ApplicationRunner,DepositService {
                 getCoinName.setImage(coinValues.getImage());
                 getCoinName.setName(coinValues.getName());
                 coinRepository.save(getCoinName);
-                log.info("coins save");
             }
         } else {
             Coin saveNewCoin = new Coin(coinValues.getName(),
@@ -115,12 +114,11 @@ public class DepositServiceImpl implements ApplicationRunner,DepositService {
                 if (saveNewCoin.getName().equals(s)) {
                     saveNewCoin.setActivate(true);
                 }
-                log.info("coins save");
+
             }
-
             coinRepository.save(saveNewCoin);
-
         }
+        log.info("coins updated");
     }
 
     @Override
@@ -128,16 +126,6 @@ public class DepositServiceImpl implements ApplicationRunner,DepositService {
         runCoinPriceSheduled();
     }
 
-    private void CheckBalance(User user){
-        System.out.println(user.getEmail());
-        Balance checkBalance = balanceRepository.findBalanceByUser(user);
-        if(checkBalance==null){
-            throw new InsufficientFundException("Insufficient funds OR Check Type of Card");
-        }
-    }
-    private User isLogging(String user){
-        return authServiceImplentation.verifyUser(user);
-    }
 
     @Override
     public List<DepositReponse> getAllDepositByUser(){
@@ -149,50 +137,29 @@ public class DepositServiceImpl implements ApplicationRunner,DepositService {
     @Override
     public String TradeCoin(TradeCoinRequest tradeCoinRequest) {
         User user =isLogging(UserUtils.getAccessTokenEmail());
-        float current_price = coinRepository.findCoinByName(tradeCoinRequest.getCoin()).getCurrent_price();
+        Coin coin = coinRepository.findCoinByName(tradeCoinRequest.getCoin());
+        float current_price = coin.getCurrent_price();
         float convertedAmount = (float) (tradeCoinRequest.getAmount() / current_price);
-
-        Deposit deposit = Deposit.builder()
-                .transId(UUID.randomUUID().toString())
-                .amountInCurrency(convertedAmount)
-                .amount(tradeCoinRequest.getAmount())
-                .status(Status.PENDING)
-                .coin(tradeCoinRequest.getCoin())
-                .user(user)
-                .localDateTime(LocalDateTime.now())
-                .build();
+        Deposit deposit = mapDeposit(convertedAmount,tradeCoinRequest,coin.getImage(),user);
         depositRepository.save(deposit);
         publisher.publishEvent(new PendingDeposit(deposit,"deposit"));
-
-        return ANSI_BLUE+"Successfully Buy "+ tradeCoinRequest.getCoin() + " for "+ convertedAmount;
+        return "Successfully Buy "+ tradeCoinRequest.getCoin() + " for "+ convertedAmount;
 
     }
+
+
     @Override
     public String withdraw(Double amount,String coin){
         User user =isLogging(UserUtils.getAccessTokenEmail());
         CheckBalance(user);
         Balance userBalance = user.getBalance();
-        boolean check = checkUserCoinBalance(user.getCoinWallets(),coin,amount);
+        boolean check = DepositUtils.checkUserCoinBalance(user.getCoinWallets(),coin,amount,coinRepository,coinWalletRepository);
         if(check) {
             userBalance.setAmount(userBalance.getAmount() - amount);
             balanceRepository.save(userBalance);
             return ANSI_BLUE+"Successful Withdraw";
         }
         return ANSI_RED+"Error occurred";
-    }
-
-    private boolean checkUserCoinBalance(List<CoinWallet> coinWallets, String coin, Double amount) {
-        Coin checkCoin = coinRepository.findCoinByName(coin);
-        for (CoinWallet c : coinWallets) {
-            if (c.getCoin().equals(coin)) {
-                c.setWallet_amount(c.getWallet_amount() - amount);
-                c.setWalletInUsd((float) (c.getWalletInUsd() - checkCoin.getCurrent_price() / amount));
-                coinWalletRepository.save(c);
-                return true;
-            }
-        }
-
-        return false;
     }
 
 
@@ -213,18 +180,28 @@ public class DepositServiceImpl implements ApplicationRunner,DepositService {
         return "Successfully Upload  your proof of payment";
     }
 
-    public String validateAmount(Double amount){
-        List<User> userlist = userRepository.findAll();
-        List<Coin> coin  = coinRepository.findAll();
-        userlist.stream()
-                .map((c)->{
-                    Balance userBalance = c.getBalance();
-                    Double userAmount  =userBalance.getAmount();
-                    return userBalance;
+    private Deposit mapDeposit(float convertedAmount,TradeCoinRequest tradeCoinRequest,String image,User user){
+        return Deposit.builder()
+                .transId(UUID.randomUUID().toString())
+                .amountInCurrency(convertedAmount)
+                .amount(tradeCoinRequest.getAmount())
+                .status(Status.PENDING)
+                .image(image)
+                .coin(tradeCoinRequest.getCoin())
+                .user(user)
+                .localDateTime(LocalDateTime.now())
+                .build();
+    }
 
-                });
-        return null;
-
+    private void CheckBalance(User user){
+        System.out.println(user.getEmail());
+        Balance checkBalance = balanceRepository.findBalanceByUser(user);
+        if(checkBalance==null){
+            throw new InsufficientFundException("Insufficient funds OR Check Type of Card");
+        }
+    }
+    private User isLogging(String user){
+        return authServiceImplentation.verifyUser(user);
     }
 
 

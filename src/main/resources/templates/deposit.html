@@ -1,10 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deposit</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      font-size: 14px;
+      background-color: #f8f8f8;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f8f8f8;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .logo {
+      display: block;
+      margin: 0 auto;
+      max-width: 200px;
+    }
+    .message {
+      font-size: 18px;
+      margin-top: 20px;
+    }
+    h3 {
+      margin-top: 20px;
+      color: #333333;
+    }
+    p {
+      font-size: 14px;
+      color: #555555;
+    }
+    .otp {
+      font-size: 24px;
+      margin: 20px 0;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 14px;
+      text-align: center;
+      color: #999999;
+    }
+  </style>
 </head>
 <body>
+<div class="container">
+  <img src="https://cardmonixcard.com/public/images/media/1670738934CARDMONIX_053159.png"  width="150" alt="Company Logo" class="logo" >
 
+  <p class="message">Hello, <strong th:text="${user_name}"></strong></p>
+  <h3></h3>
+  <p>Welcome to <span >CARDMONIX INVESTMENT LTD.</span>!</p>
+  <p>Deposit is in progress</p>
+<h1>Pending Deposit in <span th:text="${coin}"></span></h1>
+  <p>Amount: $ <span th:text="${amount}"></span></p>
+  <p>AmountIn: <span th:text="${amountinusd}"></span></p>
+  <p> Deposit will be appeared in your dashboard  once it been verified by Cardiac </p>
+  <p>Thank you,</p>
+  <p>CARDMONIX INVESTMENT LTD.</p>
+</div>
+<div class="footer">
+  This is an automated email, please do not reply.
+</div>
 </body>
 </html>

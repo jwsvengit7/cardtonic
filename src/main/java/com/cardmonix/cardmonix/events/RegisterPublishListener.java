@@ -1,7 +1,9 @@
 package com.cardmonix.cardmonix.events;
 
 import com.cardmonix.cardmonix.configurations.MailConfig;
+import com.cardmonix.cardmonix.domain.constant.Email;
 import com.cardmonix.cardmonix.domain.entity.userModel.User;
+import com.cardmonix.cardmonix.utils.EmailUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +43,6 @@ public class RegisterPublishListener implements ApplicationListener<RegisterPubl
     }
 
     private void sendEmail(User user,String otp) throws MessagingException, UnsupportedEncodingException {
-
         String subject = "SIGNUP";
         String companyName = APP_NAME;
         MimeMessage mimeMessage = mailConfig.customJavaMailSender().createMimeMessage();
@@ -49,13 +50,8 @@ public class RegisterPublishListener implements ApplicationListener<RegisterPubl
         messageHelper.setFrom(user.getEmail(), companyName);
         messageHelper.setSubject(subject);
         messageHelper.setTo(user.getEmail());
-        Context context = new Context();
-        context.setVariable("user_name", user.getUser_name());
-        context.setVariable("company_name", subject);
-        context.setVariable("otp", otp);
-        String mailContent = templateEngine.process("otp", context);
+        String mailContent = EmailUtils.sendHtmlEmailTemplate(templateEngine,subject,user.getEmail(),otp,APP_NAME, Email.OTP);
         messageHelper.setText(mailContent, true);
-
         mailConfig.customJavaMailSender().send(mimeMessage);
         log.info("Email sent successfully to: " + user.getEmail());
     }

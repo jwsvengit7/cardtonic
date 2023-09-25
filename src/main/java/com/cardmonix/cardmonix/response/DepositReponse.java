@@ -16,8 +16,7 @@ public class DepositReponse {
     private Double amount;
     private String coin;
     private Status status;
-
+    private String image;
     private String transId;
-
     private String proof;
 }
